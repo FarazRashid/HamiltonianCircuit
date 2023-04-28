@@ -5,15 +5,6 @@
 #include <sstream>
 using namespace std;
 
-std::vector<std::string> split_string(const std::string& s, char  * delimiter) {
-    std::vector<std::string> tokens;
-    std::stringstream ss(s);
-    std::string token;
-    while (std::getline(ss, token, *delimiter)) {
-        tokens.push_back(token);
-    }
-    return tokens;
-}
 
 class Graph {
 public:
@@ -59,57 +50,68 @@ public:
 
 
     void read_file(string filename) {
-    ifstream infile(filename);
-    string line;
-    while (getline(infile, line)) {
+
+        ifstream infile(filename);
+        string line;
+        size_t pos = 0;
+
+        //for vertices
+        if(getline(infile, line)) 
+        {
+            // Parse vertices
         // Parse vertices
-        size_t pos1 = line.find("{");
-        size_t pos2 = line.find("}");
-        string v_str = line.substr(pos1 + 1, pos2 - pos1 - 1);
-        vector<string> vertices = split_string(v_str, ",");
-        for (string v : vertices) {
-            add_vertex(v);
+            size_t pos1 = line.find("{");
+            size_t pos2 = line.find("}");
+            string v_str = line.substr(pos1 + 1, pos2 - pos1 - 1) + ",";
+            string delimiter = ",";
+            string token;
+
+            //vertices
+            while ((pos = v_str.find(delimiter)) != string::npos) 
+            {
+                token = v_str.substr(0, pos);
+                cout << token <<" " <<endl;
+                add_vertex(token);
+                v_str.erase(0, pos + delimiter.length());
+
+            }
+
         }
 
-        // Parse edges
-        pos1 = line.find("{", pos2);
-        pos2 = line.find("}", pos1);
-        string e_str = line.substr(pos1 + 1, pos2 - pos1 - 1);
-        vector<string> edges = split_string(e_str, ",");
-        for (string e : edges) {
-            size_t pos = e.find("(");
-            string v1_str = e.substr(pos + 1, e.find(",") - pos - 1);
-            string v2_str = e.substr(e.find(",") + 1, e.find(")") - e.find(",") - 1);
-            int w = 0;
+            //edges
 
-            // Parse weights
-            pos = line.find("Weights");
-            string weights_str = line.substr(pos + 9);
-            vector<string> weights = split_string(weights_str, ",");
-            for (int i = 0; i < edges.size(); i++) {
-                if (e == edges[i]) {
-                    w = stoi(weights[i]);
-                    break;
+           if (getline(infile, line)) 
+           {
+            size_t pos1 = line.find("{");
+            size_t pos2 = line.find("}");
+            string e_str = line.substr(pos1 + 1, pos2 - pos1 - 1) + ",";
+            int bracket_count = 0;
+            string delimiter = ",";
+            string token;
+            size_t pos = 0;
+            int start_pos = 0;
+            while ((pos = e_str.find(delimiter, start_pos)) != string::npos) 
+            {
+                if (e_str[pos] == '(') {
+                    bracket_count++;
+                } else if (e_str[pos] == ')') {
+                    bracket_count--;
+                }
+                if (bracket_count == 0) {
+                    token = e_str.substr(start_pos, pos - start_pos + 1);
+                    start_pos = pos + 1;
+                    cout << token << endl;
+                    // add_edge(token);
                 }
             }
-            add_edge(v1_str, v2_str, w);
+        }
+        
+
+    
+
+            infile.close();
         }
 
-        // Parse t-values and T
-        pos1 = line.find("t(");
-        pos2 = line.find(")");
-        while (pos1 != string::npos && pos2 != string::npos) {
-            string v_str = line.substr(pos1 + 2, pos2 - pos1 - 2);
-            int t = stoi(line.substr(pos2 + 1, line.find(",", pos2) - pos2 - 1));
-            set_t(v_str, t);
-            pos1 = line.find("t(", pos2);
-            pos2 = line.find(")", pos1);
-        }
-        int T = stoi(line.substr(line.find("T=") + 2));
-        set_T(T);
-    }
-    infile.close();
-    }
 };
 
 
@@ -117,7 +119,6 @@ int main() {
 
     Graph g;
     g.read_file("P2_test1.txt");
-    cout << "hello " <<endl;
     cout << g.total_time<<endl;
   //  g.print_graph();
     return 0;
