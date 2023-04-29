@@ -18,11 +18,12 @@ public:
         vertices.push_back(v);
     }
 
-    void add_edge(string v, string u, int w) {
+    void add_edge(string v, string u) {
+    
     int index_v = find_index(v);
     int index_u = find_index(u);
     edges.push_back(make_pair(index_v, index_u));
-    weights.push_back(w); // Add the weight to the weights vector
+    // weights.push_back(w); // Add the weight to the weights vector
     }
 
     void set_T(int t) {
@@ -40,8 +41,10 @@ public:
 
 
     int find_index(string v) {
+        cout << v << ",";
     for (int i = 0; i < vertices.size(); i++) {
         if (vertices[i] == v) {
+            cout << i <<endl;
             return i;
         }
     }
@@ -70,7 +73,7 @@ public:
             while ((pos = v_str.find(delimiter)) != string::npos) 
             {
                 token = v_str.substr(0, pos);
-                cout << token <<" " <<endl;
+               // cout << token <<" " <<endl;
                 add_vertex(token);
                 v_str.erase(0, pos + delimiter.length());
 
@@ -84,7 +87,7 @@ public:
            {
             size_t pos1 = line.find("{");
             size_t pos2 = line.find("}");
-            string e_str = line.substr(pos1 + 1, pos2 - pos1 - 1) + ",";
+            string e_str = line.substr(pos1, pos2 - pos1 - 1) + ",";
             int bracket_count = 0;
             string delimiter = "),(";
             string token;
@@ -94,20 +97,21 @@ public:
             while ((pos = e_str.find(delimiter, start_pos)) != string::npos) 
             {
                    // cout << ++edges<<endl;
-                    token = e_str.substr(start_pos, pos - start_pos + 1);
+                    token = e_str.substr(start_pos+1, pos - start_pos + 1);
                     start_pos = pos + 1;
                      string src = token.substr(1, token.find(',') - 1);
-                     string dst = token.substr(token.find(',') + 1, token.length() - token.find(',') - 2);
-                     cout << src << "," << dst <<endl;
+                    string dst = token.substr(token.find(',') + 1, token.length() - token.find(',') - 3);
+                    // cout << src << "," << dst <<endl;
                    // cout << token;
-                    // add_edge(token);
+                     add_edge(src,dst);
                 
             }
 
-            token = e_str.substr(start_pos, e_str.length() - start_pos - 1);
+            token = e_str.substr(start_pos+1, e_str.length() - start_pos - 1);
             string src = token.substr(1, token.find(',') - 1);
             string dst = token.substr(token.find(',') + 1, token.length() - token.find(',') - 2);
-            cout << src << "," << dst <<endl;
+            //cout << src << "," << dst <<endl;
+            add_edge(src,dst);
           //  cout << ++edges << endl;
            //   cout << token << endl;
         }
