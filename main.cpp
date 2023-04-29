@@ -9,20 +9,25 @@ using namespace std;
 
 
 class Graph {
-public:
+private:
+
     vector<string> vertices;
     vector<int> vertex_times;
     vector<pair<int, int>> edges;
     vector<int> weights;
     int total_time = 0;
 
-    void add_vertex(string v) {
+public:
+
+    void add_vertex(string v) 
+    {
         vertices.push_back(v);
         vertex_times.push_back(0);
 
     }
 
-    void add_edge(string v, string u) {
+    void add_edge(string v, string u) 
+    {
     
     int index_v = find_index(v);
     int index_u = find_index(u);
@@ -30,35 +35,40 @@ public:
     // weights.push_back(w); // Add the weight to the weights vector
     }
 
-    void set_T(int t) {
-    total_time = t;
-    }
+    void set_T(int t) {total_time = t;}
 
-   void set_t(string v, int t) {
-    int index_v = find_index(v);
-      //cout << v << " " << index_v << " " <<t <<endl;
-    if (index_v != -1 && index_v < vertex_times.size()) {
+   void set_t(string v, int t) 
+   {
+        int index_v = find_index(v);
         //cout << v << " " << index_v << " " <<t <<endl;
-        vertex_times[index_v] = t;
-    }
-}
 
-
-
-
-
-    int find_index(string v) {
-    for (int i = 0; i < vertices.size(); i++) {
-        if (vertices[i] == v) {
-            //cout << i <<endl;
-            return i;
+        if (index_v != -1 && index_v < vertex_times.size()) 
+        {
+            //cout << v << " " << index_v << " " <<t <<endl;
+            vertex_times[index_v] = t;
         }
     }
-    return -1; // If the vertex is not found, return -1
+
+
+
+
+
+    int find_index(string v) 
+    {
+        for (int i = 0; i < vertices.size(); i++) 
+        {
+            if (vertices[i] == v) {
+                //cout << i <<endl;
+                return i;
+            }
+        }
+
+        return -1; // If the vertex is not found, return -1
     }
 
 
-    void read_file(string filename) {
+    void read_file(string filename)
+     {
 
         ifstream infile(filename);
         string line;
@@ -89,8 +99,8 @@ public:
 
             //edges
 
-           if (getline(infile, line)) 
-           {
+        if (getline(infile, line)) 
+        {
             size_t pos1 = line.find("{");
             size_t pos2 = line.find("}");
             string e_str = line.substr(pos1, pos2 - pos1 - 1) + ",";
@@ -147,32 +157,33 @@ public:
               if(getline(infile, line))
               {
 
-        // Parse the line to extract vertices and their times
-        size_t pos = 0;
-        while ((pos = line.find("t(", pos)) != string::npos) {
-            pos += 2; // skip "t(" prefix
-            size_t endpos = line.find("=", pos);
-            string v = line.substr(pos, endpos - pos-1);
-            pos = endpos + 1;
-            endpos = line.find(",", pos);
-            int t = stoi(line.substr(pos, endpos - pos));
-           // cout << v << " " << t << endl;
-            set_t(v,t);
-            pos = endpos;
+                // Parse the line to extract vertices and their times
+                size_t pos = 0;
+                while ((pos = line.find("t(", pos)) != string::npos)
+                 {
+                    pos += 2; // skip "t(" prefix
+                    size_t endpos = line.find("=", pos);
+                    string v = line.substr(pos, endpos - pos-1);
+                    pos = endpos + 1;
+                    endpos = line.find(",", pos);
+                    int t = stoi(line.substr(pos, endpos - pos));
+                // cout << v << " " << t << endl;
+                    set_t(v,t);
+                    pos = endpos;
 
-        }
+                 }
 
-        // Parse the line to extract total time T
-        if(getline(infile, line))
-        {
-            pos = line.find("T=");
-            if (pos != string::npos) {
-                int T = stoi(line.substr(pos + 2));
-                set_T(T);
-               // cout << "T " << T << endl;
+                // Parse the line to extract total time T
+                if(getline(infile, line))
+                {
+                    pos = line.find("T=");
+                    if (pos != string::npos) {
+                        int T = stoi(line.substr(pos + 2));
+                        set_T(T);
+                    // cout << "T " << T << endl;
+                    }
+                }
             }
-        }
-    }
     
                                 
             infile.close();
@@ -181,23 +192,28 @@ public:
             void print_graph() 
             {
                 cout << "Vertices: ";
-                for (int i = 0; i < vertices.size(); i++) {
+                for (int i = 0; i < vertices.size(); i++)
+                {
                     cout << vertices[i] << " ";
                 }
                 cout << endl;
 
                 cout << "Edges: ";
-                for (int i = 0; i < edges.size(); i++) {
+
+                for (int i = 0; i < edges.size(); i++) 
+                {
                     int src = edges[i].first;
                     int dst = edges[i].second;
                     int weight = weights[i]; // add this line to print the weight
                     cout << "(" << vertices[src] << "," << vertices[dst] << "," << weight << ") ";
                 }
+
                 cout << endl;
 
                    // Print vertex times
                     cout << "Vertex times: ";
-                    for (int i = 0; i < vertices.size(); i++) {
+                    for (int i = 0; i < vertices.size(); i++) 
+                    {
                         cout << vertices[i] << " " << vertex_times[i] << " ";
                     }
                     cout << endl;
@@ -211,28 +227,34 @@ public:
 
         void dfs(int v, vector<bool>& visited) 
         {
-        visited[v] = true;
-        cout << vertices[v] << " ";
+            visited[v] = true;
+            cout << vertices[v] << " ";
 
-        for (int i = 0; i < edges.size(); i++) {
-            if (edges[i].first == v) {
-                int u = edges[i].second;
-                if (!visited[u]) {
-                    dfs(u, visited);
+            for (int i = 0; i < edges.size(); i++) 
+            {
+                if (edges[i].first == v) 
+                {
+                    int u = edges[i].second;
+                    if (!visited[u]) 
+                    {
+                        dfs(u, visited);
+                    }
                 }
             }
         }
-    }
 
-    void dfsTraversal() {
-        vector<bool> visited(vertices.size(), false);
+        void dfsTraversal() 
+        {
+            vector<bool> visited(vertices.size(), false);
 
-        for (int v = 0; v < vertices.size(); v++) {
-            if (!visited[v]) {
-                dfs(v, visited);
+            for (int v = 0; v < vertices.size(); v++)
+            {
+                if (!visited[v]) 
+                {
+                    dfs(v, visited);
+                }
             }
         }
-    }
 
 };
 
@@ -258,6 +280,7 @@ int main()
                 Graph g;
                 g.read_file(filename);
                 g.print_graph();
+                cout << "Depth First Traversal : " ;
                 g.dfsTraversal();
                 cout <<endl;
                 cout << "---------------------" <<endl;
