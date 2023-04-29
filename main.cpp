@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <stack>
+#include <dirent.h>
 using namespace std;
 
 
@@ -241,11 +242,38 @@ public:
 int main() 
 {
 
-    Graph g;
-    g.read_file("P2_test2.txt");
-    //cout<<g.total_time <<endl;
-    g.print_graph();
-    g.dfsTraversal();
-    return 0;
+    
+        DIR *dir;
+        struct dirent *ent;
+        if ((dir = opendir(".")) != NULL)
+        {
+            while ((ent = readdir(dir)) != NULL)
+            {
+                string filename = ent->d_name;
+                if (filename.find(".txt") != string::npos) 
+                {
+                // Process the file
+                cout << "Now reading: " << filename <<endl;
+                cout << "---------------------" <<endl;
+                Graph g;
+                g.read_file(filename);
+                g.print_graph();
+                g.dfsTraversal();
+                cout <<endl;
+                cout << "---------------------" <<endl;
+                cout <<endl<<endl;
+                }
+            }
+        
+            closedir(dir);
+        }
+         else {
+        // Could not open directory
+        perror("");
+        return EXIT_FAILURE;
+        }
+
+        return 0;
+
 }
 
