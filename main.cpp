@@ -16,7 +16,7 @@ public:
 
     void add_vertex(string v) {
         vertices.push_back(v);
-        //vertex_times.push_back(0);
+        vertex_times.push_back(0);
 
     }
 
@@ -32,12 +32,15 @@ public:
     total_time = t;
     }
 
-    void set_t(string v, int t) {
+   void set_t(string v, int t) {
     int index_v = find_index(v);
-    if (index_v != -1) {
+      //cout << v << " " << index_v << " " <<t <<endl;
+    if (index_v != -1 && index_v < vertex_times.size()) {
+        //cout << v << " " << index_v << " " <<t <<endl;
         vertex_times[index_v] = t;
     }
-    }
+}
+
 
 
 
@@ -138,56 +141,83 @@ public:
 
                 //times
 
-                if (getline(infile, line)) {
-                    while (getline(infile, line)) {
-                        size_t pos = line.find("t(");
-                        if (pos != string::npos) {
-                            cout << "hello" <<endl;
-                            string v = line.substr(pos + 1, line.find(")") - pos);
-                            int t = stoi(line.substr(line.find("=") + 1, line.find(",") - line.find("=") - 1));
-                            cout << t;
-                            set_t(v, t);
-                        } else if (line.find("T=") != string::npos) {
-                            int T = stoi(line.substr(line.find("=") + 1));
-                            set_T(T);
-                            break;
-                        }
-                    }
-                }
+         
+              if(getline(infile, line))
+              {
 
+        // Parse the line to extract vertices and their times
+        size_t pos = 0;
+        while ((pos = line.find("t(", pos)) != string::npos) {
+            pos += 2; // skip "t(" prefix
+            size_t endpos = line.find("=", pos);
+            string v = line.substr(pos, endpos - pos-1);
+            pos = endpos + 1;
+            endpos = line.find(",", pos);
+            int t = stoi(line.substr(pos, endpos - pos));
+           // cout << v << " " << t << endl;
+            set_t(v,t);
+            pos = endpos;
+
+        }
+
+        // Parse the line to extract total time T
+        if(getline(infile, line))
+        {
+            pos = line.find("T=");
+            if (pos != string::npos) {
+                int T = stoi(line.substr(pos + 2));
+                set_T(T);
+               // cout << "T " << T << endl;
+            }
+        }
+    }
     
-
+                                
             infile.close();
         }
 
-        void print_graph() 
-        {
-            cout << "Vertices: ";
-            for (int i = 0; i < vertices.size(); i++) {
-                cout << vertices[i] << " ";
-            }
-            cout << endl;
+            void print_graph() 
+            {
+                cout << "Vertices: ";
+                for (int i = 0; i < vertices.size(); i++) {
+                    cout << vertices[i] << " ";
+                }
+                cout << endl;
 
-            cout << "Edges: ";
-            for (int i = 0; i < edges.size(); i++) {
-                int src = edges[i].first;
-                int dst = edges[i].second;
-                int weight = weights[i]; // add this line to print the weight
-                cout << "(" << vertices[src] << "," << vertices[dst] << "," << weight << ") "; // modify this line to include the weight
+                cout << "Edges: ";
+                for (int i = 0; i < edges.size(); i++) {
+                    int src = edges[i].first;
+                    int dst = edges[i].second;
+                    int weight = weights[i]; // add this line to print the weight
+                    cout << "(" << vertices[src] << "," << vertices[dst] << "," << weight << ") ";
+                }
+                cout << endl;
+
+                   // Print vertex times
+                    cout << "Vertex times: ";
+                    for (int i = 0; i < vertices.size(); i++) {
+                        cout << vertices[i] << " " << vertex_times[i] << " ";
+                    }
+                    cout << endl;
+                            
+
+              
+
+                // Print total time
+                cout << "Total time: " << total_time << endl;
             }
-            cout << endl;
-        }
 
 };
 
 
 
-int main() {
+int main() 
+{
 
     Graph g;
     g.read_file("P2_test2.txt");
-    cout<<g.total_time <<endl;
-   // g.print_graph();
+    //cout<<g.total_time <<endl;
+    g.print_graph();
     return 0;
 }
 
