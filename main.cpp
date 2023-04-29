@@ -41,10 +41,9 @@ public:
 
 
     int find_index(string v) {
-        cout << v << ",";
     for (int i = 0; i < vertices.size(); i++) {
         if (vertices[i] == v) {
-            cout << i <<endl;
+            //cout << i <<endl;
             return i;
         }
     }
@@ -94,18 +93,19 @@ public:
             size_t pos = 0;
             int start_pos = 0;
             int edges=0;
-            while ((pos = e_str.find(delimiter, start_pos)) != string::npos) 
-            {
-                   // cout << ++edges<<endl;
-                    token = e_str.substr(start_pos+1, pos - start_pos + 1);
-                    start_pos = pos + 1;
-                     string src = token.substr(1, token.find(',') - 1);
-                    string dst = token.substr(token.find(',') + 1, token.length() - token.find(',') - 3);
-                    // cout << src << "," << dst <<endl;
-                   // cout << token;
-                     add_edge(src,dst);
-                
-            }
+
+                while ((pos = e_str.find(delimiter, start_pos)) != string::npos) 
+                {
+                    // cout << ++edges<<endl;
+                        token = e_str.substr(start_pos+1, pos - start_pos + 1);
+                        start_pos = pos + 1;
+                        string src = token.substr(1, token.find(',') - 1);
+                        string dst = token.substr(token.find(',') + 1, token.length() - token.find(',') - 3);
+                        // cout << src << "," << dst <<endl;
+                    // cout << token;
+                        add_edge(src,dst);
+                    
+                }
 
             token = e_str.substr(start_pos+1, e_str.length() - start_pos - 1);
             string src = token.substr(1, token.find(',') - 1);
@@ -116,6 +116,24 @@ public:
            //   cout << token << endl;
         }
 
+                //weights
+                if (getline(infile, line))
+                {
+                    size_t pos1 = line.find("{");
+                    size_t pos2 = line.find("}");
+                    string w_str = line.substr(pos1 + 1, pos2 - pos1 - 1) + ",";
+                    string delimiter = ",";
+                    string token;
+
+                    while ((pos = w_str.find(delimiter)) != string::npos) 
+                    {
+                        token = w_str.substr(0, pos);
+                        cout << token <<" " <<endl;
+                        weights.push_back(stod(token));
+                        w_str.erase(0, pos + delimiter.length());
+                    }
+                }
+
            
 
     
@@ -123,15 +141,33 @@ public:
             infile.close();
         }
 
+        void print_graph() 
+        {
+            cout << "Vertices: ";
+            for (int i = 0; i < vertices.size(); i++) {
+                cout << vertices[i] << " ";
+            }
+            cout << endl;
+
+            cout << "Edges: ";
+            for (int i = 0; i < edges.size(); i++) {
+                int src = edges[i].first;
+                int dst = edges[i].second;
+                int weight = weights[i]; // add this line to print the weight
+                cout << "(" << vertices[src] << "," << vertices[dst] << "," << weight << ") "; // modify this line to include the weight
+            }
+            cout << endl;
+        }
+
 };
+
 
 
 int main() {
 
     Graph g;
     g.read_file("P2_test1.txt");
-    cout << g.total_time<<endl;
-  //  g.print_graph();
+    g.print_graph();
     return 0;
 }
 
