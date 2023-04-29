@@ -7,6 +7,8 @@
 #include <dirent.h>
 using namespace std;
 
+const int INF = 0x3f3f3f3f; // use a large number that does not overflow
+
 
 class Graph {
 private:
@@ -15,6 +17,7 @@ private:
     vector<int> vertex_times;
     vector<pair<int, int>> edges;
     vector<int> weights;
+
     int total_time = 0;
 
 public:
@@ -256,7 +259,105 @@ public:
             }
         }
 
+        int getEdgeIndex(int u, int v) 
+        {
+            //cout << u << "," << v <<endl;
+            
+                    for (int i = 0; i < edges.size(); i++) 
+                    {
+                    if ((edges[i].first == u && edges[i].second == v) || (edges[i].first == v && edges[i].second == u)) 
+                    {   
+                        cout << u << "," << v << " = " << i <<endl;
+                        return i;
+                    }
+                }
+            return -1; // edge not found
+        }
+
+
+     vector<int> tspBacktrack() {
+        vector<int> best_route;
+        vector<int> current_route;
+        vector<bool> visited(vertices.size(), false);
+        int current_time = 0;
+        int best_distance = INF;
+
+        tspBacktrackUtil(best_route, current_route, visited, current_time, best_distance);
+
+         cout << "Best path: ";
+
+        for (int i = 0; i < best_route.size(); i++) 
+        {
+            cout << best_route[i] << " ";
+        }
+        cout << endl;
+
+            return best_route;
+    }
+
+        
+    void tspBacktrackUtil(vector<int>& best_route, vector<int>& current_route, vector<bool>& visited, int current_time, int& best_distance) {
+        if (current_route.size() == vertices.size()) { // base case: all cities have been visited
+            int total_distance = calculateDistance(current_route);
+
+            if (total_distance < best_distance) {
+                best_distance = total_distance;
+                best_route = current_route;
+            }
+
+            return;
+        }
+
+        for (int i = 0; i < vertices.size(); i++) {
+            if (!visited[i] && canVisit(i, current_time, current_route)) { // city has not been visited and can be visited within its time window
+                visited[i] = true;
+                current_route.push_back(i);
+
+                tspBacktrackUtil(best_route, current_route, visited, current_time + vertex_times[i] + weights[getEdgeIndex(current_route[current_route.size() - 2], i)], best_distance);
+
+                current_route.pop_back();
+                visited[i] = false;
+            }
+        }
+    }
+
+    int calculateDistance(vector<int>& route) {
+        int total_distance = 0;
+
+        for (int i = 1; i < route.size(); i++) {
+            int index = getEdgeIndex(route[i - 1], route[i]);
+            total_distance += weights[index];
+        }
+
+        cout << total_distance<<endl;
+
+        return total_distance;
+    }
+
+    bool canVisit(int city_index, int current_time, vector<int>& current_route) {
+        if (current_time + vertex_times[city_index] > total_time) { // city cannot be visited within its time window
+            return false;
+        }
+
+        if (city_index == 0) { // start city can always be visited
+            return true;
+        }
+
+        int edge_index = getEdgeIndex(current_route[current_route.size() - 1], city_index);
+        int earliest_departure_time = max(current_time + weights[edge_index], vertex_times[city_index]);
+        int latest_departure_time = vertex_times[city_index] + vertex_times[city_index];
+
+        if (earliest_departure_time > latest_departure_time) { // cannot visit within time window
+            return false;
+        }
+
+        return true;
+    }
 };
+
+
+
+
 
 
 
@@ -279,9 +380,10 @@ int main()
                 cout << "---------------------" <<endl;
                 Graph g;
                 g.read_file(filename);
-                g.print_graph();
-                cout << "Depth First Traversal : " ;
-                g.dfsTraversal();
+                //g.print_graph();
+                //cout << "Depth First Traversal : " ;
+                //g.dfsTraversal();
+                g.tspBacktrack();
                 cout <<endl;
                 cout << "---------------------" <<endl;
                 cout <<endl<<endl;
