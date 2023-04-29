@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <stack>
 using namespace std;
 
 
@@ -207,7 +208,33 @@ public:
                 cout << "Total time: " << total_time << endl;
             }
 
+        void dfs(int v, vector<bool>& visited) 
+        {
+        visited[v] = true;
+        cout << vertices[v] << " ";
+
+        for (int i = 0; i < edges.size(); i++) {
+            if (edges[i].first == v) {
+                int u = edges[i].second;
+                if (!visited[u]) {
+                    dfs(u, visited);
+                }
+            }
+        }
+    }
+
+    void dfsTraversal() {
+        vector<bool> visited(vertices.size(), false);
+
+        for (int v = 0; v < vertices.size(); v++) {
+            if (!visited[v]) {
+                dfs(v, visited);
+            }
+        }
+    }
+
 };
+
 
 
 
@@ -218,6 +245,7 @@ int main()
     g.read_file("P2_test2.txt");
     //cout<<g.total_time <<endl;
     g.print_graph();
+    g.dfsTraversal();
     return 0;
 }
 
