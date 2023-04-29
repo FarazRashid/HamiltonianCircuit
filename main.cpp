@@ -86,26 +86,33 @@ public:
             size_t pos2 = line.find("}");
             string e_str = line.substr(pos1 + 1, pos2 - pos1 - 1) + ",";
             int bracket_count = 0;
-            string delimiter = ",";
+            string delimiter = "),(";
             string token;
             size_t pos = 0;
             int start_pos = 0;
+            int edges=0;
             while ((pos = e_str.find(delimiter, start_pos)) != string::npos) 
             {
-                if (e_str[pos] == '(') {
-                    bracket_count++;
-                } else if (e_str[pos] == ')') {
-                    bracket_count--;
-                }
-                if (bracket_count == 0) {
+                   // cout << ++edges<<endl;
                     token = e_str.substr(start_pos, pos - start_pos + 1);
                     start_pos = pos + 1;
-                    cout << token << endl;
+                     string src = token.substr(1, token.find(',') - 1);
+                     string dst = token.substr(token.find(',') + 1, token.length() - token.find(',') - 2);
+                     cout << src << "," << dst <<endl;
+                   // cout << token;
                     // add_edge(token);
-                }
+                
             }
+
+            token = e_str.substr(start_pos, e_str.length() - start_pos - 1);
+            string src = token.substr(1, token.find(',') - 1);
+            string dst = token.substr(token.find(',') + 1, token.length() - token.find(',') - 2);
+            cout << src << "," << dst <<endl;
+          //  cout << ++edges << endl;
+           //   cout << token << endl;
         }
-        
+
+           
 
     
 
