@@ -16,6 +16,8 @@ public:
 
     void add_vertex(string v) {
         vertices.push_back(v);
+        //vertex_times.push_back(0);
+
     }
 
     void add_edge(string v, string u) {
@@ -128,13 +130,30 @@ public:
                     while ((pos = w_str.find(delimiter)) != string::npos) 
                     {
                         token = w_str.substr(0, pos);
-                        cout << token <<" " <<endl;
+                        //cout << token <<" " <<endl;
                         weights.push_back(stod(token));
                         w_str.erase(0, pos + delimiter.length());
                     }
                 }
 
-           
+                //times
+
+                if (getline(infile, line)) {
+                    while (getline(infile, line)) {
+                        size_t pos = line.find("t(");
+                        if (pos != string::npos) {
+                            cout << "hello" <<endl;
+                            string v = line.substr(pos + 1, line.find(")") - pos);
+                            int t = stoi(line.substr(line.find("=") + 1, line.find(",") - line.find("=") - 1));
+                            cout << t;
+                            set_t(v, t);
+                        } else if (line.find("T=") != string::npos) {
+                            int T = stoi(line.substr(line.find("=") + 1));
+                            set_T(T);
+                            break;
+                        }
+                    }
+                }
 
     
 
@@ -166,8 +185,9 @@ public:
 int main() {
 
     Graph g;
-    g.read_file("P2_test1.txt");
-    g.print_graph();
+    g.read_file("P2_test2.txt");
+    cout<<g.total_time <<endl;
+   // g.print_graph();
     return 0;
 }
 
