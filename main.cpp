@@ -340,7 +340,7 @@ public:
                         int total_distance = calculateDistance(current_route);
                         if (total_distance < best_distance) {
 
-                            cout << "current best distance = " << best_distance << " new best distance = " << total_distance << endl;
+                            //cout << "current best distance = " << best_distance << " new best distance = " << total_distance << endl;
 
                             
                             best_distance = total_distance;
@@ -373,21 +373,21 @@ public:
              if(return_index==INF)
                 return INF;
             
-            cout << "New route = ";
+            //cout << "New route = ";
                     int total_distance = 0;
                     for (int i = 1; i < route.size(); i++) {
                         int u = route[i - 1];
                         int v = route[i];
-                           cout << vertices[u] << "," << vertices[v] << "= "<< adj_matrix[u][v] << ",";
+                          // cout << vertices[u] << "," << vertices[v] << "= "<< adj_matrix[u][v] << ",";
                         if(adj_matrix[u][v]!=INF)
                             total_distance += adj_matrix[u][v];
                     }
 
                     // Add distance back to starting city
-                    cout << vertices[last_index] << "," << vertices[start_index] << "= "<< adj_matrix[last_index][start_index] << " total distance = ";
+                   // cout << vertices[last_index] << "," << vertices[start_index] << "= "<< adj_matrix[last_index][start_index] << " total distance = ";
                     total_distance += return_index;
 
-                    cout << total_distance <<endl;
+                    //cout << total_distance <<endl;
                     return total_distance;
         }
 
