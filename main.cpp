@@ -312,26 +312,35 @@ public:
 
             visited[0] = true;
             current_route.push_back(0);
-            tspDFSUtil(best_route, current_route, visited, current_time, best_distance);
+            int current_distance=0;
+            tspDFSUtil(best_route, current_route, visited, current_time, current_distance, best_distance);
             
-            cout << "Best Distance = " << best_distance <<endl;
-            cout << "Best path: ";
-            for (int i = 0; i < best_route.size(); i++) {
-                cout << best_route [i] << " ";
-            }
-            cout << endl;
+            if(!current_route.empty())
+            {
+                cout << "Best Distance = " << best_distance <<endl;
+                cout << "Best path:  (";
+                for (int i = 0; i < best_route.size(); i++)
+                 {
+                    cout << vertices[best_route [i]] << " ";
+                }
 
+                cout << vertices[0] << ")" << endl;
+                cout << endl;
+            }
+            
+            else if (current_route.empty())
+                cout << "No Feasible Circuit " <<endl;
+                
             return;
         }
 
-        void tspDFSUtil(vector<int>& best_route, vector<int>& current_route, vector<bool>& visited, int& current_time, int& best_distance) {
+        void tspDFSUtil(vector<int>& best_route, vector<int>& current_route, vector<bool>& visited, int& current_time, int & current_distance, int& best_distance) {
             if (current_route.size() == vertices.size()) { // base case: all cities have been visited
                 int total_distance = calculateDistance(current_route);
                 if (total_distance < best_distance) {
 
                     cout << "current best distance = " << best_distance << " new best distance = " << total_distance << endl;
 
-                    cout<< "previous best route = ";
                     
                     best_distance = total_distance;
                     best_route = current_route;
@@ -340,11 +349,11 @@ public:
             }
 
             for (int i = 1; i < vertices.size(); i++) {
-                if (!visited[i] && canVisit(vertices[i], current_time, current_route)) { // city has not been visited and can be visited within its time window
+                if (!visited[i] && canVisit(vertices[i], current_time, current_route, current_distance,best_distance)) { // city has not been visited and can be visited within its time window
                     visited[i] = true;
                     current_route.push_back(i);
                     current_time += vertex_times[i];
-                    tspDFSUtil(best_route, current_route, visited, current_time, best_distance);
+                    tspDFSUtil(best_route, current_route, visited, current_time, current_distance, best_distance);
                     current_time -= vertex_times[i];
                     current_route.pop_back();
                     visited[i] = false;
@@ -354,6 +363,13 @@ public:
 
         int calculateDistance(vector<int>& route) 
         {
+
+             int start_index = find_index(vertices[0]);
+             int last_index = route.back();
+            int return_index = adj_matrix[last_index][start_index];
+
+             if(return_index==INF)
+                return INF;
             
             cout << "New route = ";
                     int total_distance = 0;
@@ -366,9 +382,6 @@ public:
                     }
 
                     // Add distance back to starting city
-                    int start_index = find_index(vertices[0]);
-                    int last_index = route.back();
-                    int return_index = adj_matrix[last_index][start_index];
                     cout << vertices[last_index] << "," << vertices[start_index] << "= "<< adj_matrix[last_index][start_index] << " total distance = ";
                     total_distance += return_index;
 
@@ -376,17 +389,9 @@ public:
                     return total_distance;
         }
 
-        bool canVisit(string city, int current_time, vector<int>& current_route) {
+        bool canVisit(string city, int current_time, vector<int>& current_route, int & current_distance, int & best_time) {
             int city_index = find_index(city);
             int last_index = current_route.back();  
-
-//UPDATE THIS
-        if(current_route.size()==vertices.size())
-        {
-            if(adj_matrix[city_index][0] == INF)
-                return false;
-
-        }
 
         // Check if the edge between the last visited city and the current city is infinite
             if (adj_matrix[last_index][city_index] == INF) 
@@ -394,8 +399,18 @@ public:
                 return false;
             }
 
+            if(adj_matrix[last_index][city_index]+current_distance>best_time)
+            {
+                current_distance-=adj_matrix[last_index][city_index];
+                return false;
+            }
+
+            else if(adj_matrix[last_index][city_index]+current_distance<=best_time)
+                current_distance+=adj_matrix[last_index][city_index];
+            
 
             if (current_time + vertex_times[city_index] > total_time) { // city cannot be visited within its time window
+            cout << "current time exceeded " <<endl;
                 return false;
             }
             return true;
