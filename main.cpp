@@ -17,6 +17,7 @@ private:
     vector<int> vertex_times;
     vector<pair<int, int>> edges;
     vector<int> weights;
+    vector<vector<int>> adj_matrix;
 
     int total_time = 0;
 
@@ -99,6 +100,9 @@ public:
             }
 
         }
+
+        adj_matrix.resize(vertices.size(), vector<int>(vertices.size(), INF));
+
 
             //edges
 
@@ -186,6 +190,25 @@ public:
                     // cout << "T " << T << endl;
                     }
                 }
+
+                for (int i = 0; i < edges.size(); i++) 
+                {
+                        int u = edges[i].first;
+                        int v = edges[i].second;
+                        //int u = find_index(edges[i].first);
+                        //int v = find_index(edges[i].second);
+                        adj_matrix[u][v] = weights[i];
+                        adj_matrix[v][u] = weights[i];
+                }
+
+                // for (int i = 0; i < adj_matrix.size(); i++) 
+                // {
+                //             for (int j = 0; j < adj_matrix[i].size(); j++) 
+                //             {
+                //                 cout << adj_matrix[i][j] << " ";
+                //             }
+                //             cout << endl;
+                //         }
             }
     
                                 
@@ -259,21 +282,15 @@ public:
             }
         }
 
-        int getEdgeIndex(int u, int v) 
-        {
-            //cout << u << "," << v <<endl;
-            
-                    for (int i = 0; i < edges.size(); i++) 
-                    {
-                    if ((edges[i].first == u && edges[i].second == v) || (edges[i].first == v && edges[i].second == u)) 
-                    {   
-                       // cout << u << "," << v << " = " << weights[i] <<endl;
-                        //cout<<weights[i]<<endl;
-                        return i;
-                    }
-                }
-            return -1; // edge not found
-        }
+            int getEdgeIndex(int u, int v) 
+            {
+                //cout << u << "," << v <<endl;
+                
+                if(adj_matrix[u][v]!=INF)
+                    return adj_matrix[u][v];
+
+                return -1; // edge not found
+            }
 
 
         void tspDFS() {
@@ -300,7 +317,7 @@ public:
             cout << "Best Distance = " << best_distance <<endl;
             cout << "Best path: ";
             for (int i = 0; i < best_route.size(); i++) {
-                cout << best_route[i] << " ";
+                cout << best_route [i] << " ";
             }
             cout << endl;
 
@@ -311,6 +328,11 @@ public:
             if (current_route.size() == vertices.size()) { // base case: all cities have been visited
                 int total_distance = calculateDistance(current_route);
                 if (total_distance < best_distance) {
+
+                    cout << "current best distance = " << best_distance << " new best distance = " << total_distance << endl;
+
+                    cout<< "previous best route = ";
+                    
                     best_distance = total_distance;
                     best_route = current_route;
                 }
@@ -318,7 +340,7 @@ public:
             }
 
             for (int i = 1; i < vertices.size(); i++) {
-                if (!visited[i] && canVisit(vertices[i], current_time)) { // city has not been visited and can be visited within its time window
+                if (!visited[i] && canVisit(vertices[i], current_time, current_route)) { // city has not been visited and can be visited within its time window
                     visited[i] = true;
                     current_route.push_back(i);
                     current_time += vertex_times[i];
@@ -330,23 +352,49 @@ public:
             }
         }
 
-        int calculateDistance(vector<int>& route) {
-            int total_distance = 0;
-            for (int i = 1; i < route.size(); i++) {
-                int index = getEdgeIndex(route[i - 1], route[i]);
-                total_distance += weights[index];
-            }
-            // Add distance back to starting city
-            int start_index = find_index(vertices[0]);
-            int last_index = route.back();
-            int return_index = getEdgeIndex(last_index, start_index);
-            total_distance += weights[return_index];
-            //cout << "Total Distance " << total_distance<<endl;
-            return total_distance;
+        int calculateDistance(vector<int>& route) 
+        {
+            
+            cout << "New route = ";
+                    int total_distance = 0;
+                    for (int i = 1; i < route.size(); i++) {
+                        int u = route[i - 1];
+                        int v = route[i];
+                           cout << vertices[u] << "," << vertices[v] << "= "<< adj_matrix[u][v] << ",";
+                        if(adj_matrix[u][v]!=INF)
+                            total_distance += adj_matrix[u][v];
+                    }
+
+                    // Add distance back to starting city
+                    int start_index = find_index(vertices[0]);
+                    int last_index = route.back();
+                    int return_index = adj_matrix[last_index][start_index];
+                    cout << vertices[last_index] << "," << vertices[start_index] << "= "<< adj_matrix[last_index][start_index] << " total distance = ";
+                    total_distance += return_index;
+
+                    cout << total_distance <<endl;
+                    return total_distance;
         }
 
-        bool canVisit(string city, int& current_time) {
+        bool canVisit(string city, int current_time, vector<int>& current_route) {
             int city_index = find_index(city);
+            int last_index = current_route.back();  
+
+//UPDATE THIS
+        if(current_route.size()==vertices.size())
+        {
+            if(adj_matrix[city_index][0] == INF)
+                return false;
+
+        }
+
+        // Check if the edge between the last visited city and the current city is infinite
+            if (adj_matrix[last_index][city_index] == INF) 
+            {
+                return false;
+            }
+
+
             if (current_time + vertex_times[city_index] > total_time) { // city cannot be visited within its time window
                 return false;
             }
