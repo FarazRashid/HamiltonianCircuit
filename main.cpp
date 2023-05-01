@@ -325,14 +325,11 @@ public:
         }
 
 <<<<<<< HEAD
-<<<<<<< HEAD
         void tspDFSUtil(vector<int>& best_route, vector<int>& current_route, vector<bool>& visited, int& current_time, int & current_distance, int& best_distance) {
         if (current_route.size() == vertices.size()) { // base case: all cities have been visited
                         int total_distance = calculateDistance(current_route);
                         if (total_distance < best_distance) {
 =======
-=======
->>>>>>> parent of fb47a7f (Optomized the usage of current distance, looking into removing calculate_distance function completely)
         void tspDFSUtil(vector<int>& best_route, vector<int>& current_route, vector<bool>& visited, int& current_time, int& best_distance) {
             if (current_route.size() == vertices.size()) { // base case: all cities have been visited
                 int total_distance = calculateDistance(current_route);
@@ -342,15 +339,12 @@ public:
                             cout << "current best distance = " << best_distance << " new best distance = " << total_distance << endl;
 
 <<<<<<< HEAD
-<<<<<<< HEAD
                             
                             best_distance = total_distance;
                             best_route = current_route;
 
                                return;
 =======
-=======
->>>>>>> parent of fb47a7f (Optomized the usage of current distance, looking into removing calculate_distance function completely)
                     cout<< "previous best route = ";
                     
                     best_distance = total_distance;
@@ -398,7 +392,6 @@ public:
         }
 
 <<<<<<< HEAD
-<<<<<<< HEAD
             bool canVisit(string city, int current_time, vector<int>& current_route, int & current_distance, int & best_time) {
                 int city_index = find_index(city);
                 int last_index = current_route.back();  
@@ -427,8 +420,6 @@ public:
             }
 
 =======
-=======
->>>>>>> parent of fb47a7f (Optomized the usage of current distance, looking into removing calculate_distance function completely)
         bool canVisit(string city, int current_time, vector<int>& current_route) {
             int city_index = find_index(city);
             int last_index = current_route.back();  
